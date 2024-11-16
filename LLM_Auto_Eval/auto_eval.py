@@ -32,6 +32,7 @@ def run(
         total_score = 0
         row_count = 0
         for row in row_datas:
+            print(f"\n=============status=============")
             print(f"\rProcessing: {row_count+1}/{total_rows} ({((row_count+1)/total_rows*100):.1f}%)")
             input_text = row["input"]
             print("=============input_text=============")
