@@ -22,6 +22,7 @@ def run(
     now = datetime.now().strftime("%Y%m%d%H%M%S").zfill(14)
     output_file = f"result_test_{now}.csv"
     fieldnames, row_datas = tasks.get_test_data()
+    total_rows = len(row_datas)
 
     with open(output_file, "w", newline="", encoding="utf-8") as outfile:
         fieldnames = fieldnames + ["result_output", "score"]
@@ -31,6 +32,7 @@ def run(
         total_score = 0
         row_count = 0
         for row in row_datas:
+            print(f"\rProcessing: {row_count+1}/{total_rows} ({((row_count+1)/total_rows*100):.1f}%)")
             input_text = row["input"]
             print("=============input_text=============")
             print(input_text)
