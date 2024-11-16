@@ -17,15 +17,21 @@ class EvaluationCallback(Protocol):
 
 
 def run(
-    llm: LLM, eval_llm: BaseChatModel, evaluation_callback: EvaluationCallback = None
+    llm: LLM, eval_llm: BaseChatModel = None, evaluation_callback: EvaluationCallback = None
 ) -> float:
     now = datetime.now().strftime("%Y%m%d%H%M%S").zfill(14)
-    output_file = f"result_test_{now}.csv"
+    if eval_llm:
+        output_file = f"result_eval_{now}.csv"
+    else:
+        output_file = f"result_{now}.csv"
     fieldnames, row_datas = tasks.get_test_data()
     total_rows = len(row_datas)
 
     with open(output_file, "w", newline="", encoding="utf-8") as outfile:
-        fieldnames = fieldnames + ["result_output", "score"]
+        if eval_llm:
+            fieldnames = fieldnames + ["result_output", "score"]
+        else:
+            fieldnames = fieldnames + ["result_output"]
 
         writer = csv.DictWriter(outfile, fieldnames=fieldnames)
         writer.writeheader()
@@ -46,14 +52,15 @@ def run(
             print("=============result_output=============")
             print(result_output)
 
-            score = evaluation(
-                eval_llm, result_output, input_text, output_text, eval_aspect
-            )
-
-            print("=============score=============")
-            print(score)
-            row["score"] = score
-            total_score += score
+            if eval_llm:
+                score = evaluation(
+                    eval_llm, result_output, input_text, output_text, eval_aspect
+                )
+    
+                print("=============score=============")
+                print(score)
+                row["score"] = score
+                total_score += score
             row_count += 1
 
             if evaluation_callback:
